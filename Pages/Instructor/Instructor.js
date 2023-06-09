@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import Calendar from "../../Component/Calendar/Calendar";
 import DiverManagement from "../../Component/DiverManagement/DiverManagement";
-import {useNavigate} from "react-router-dom";
 import alertify from 'alertifyjs';
+import { useNavigation } from '@react-navigation/native';
 import 'alertifyjs/build/css/alertify.css';
 import AdminManagement from "../../Component/AdminManagement/AdminManagement";
 import SiteManagement from "../../Component/SiteManagement/SiteManagement";
 
 function Instructor(props) {
-    const navigate = useNavigate();
+    const navigation = useNavigation();
     useEffect(() => {
         if (localStorage.getItem('token') !== null) {
             fetch("http://localhost:5000/api/users/verify", {
@@ -23,12 +23,12 @@ function Instructor(props) {
                     if (response.ok) {
                         return response.json(); // Convert the response to JSON
                     } else {
-                        navigate("/login", {replace: true});
+                        navigation.navigate('Login')
                     }
                 })
                 .then(async (data) => {
                     if(data.decoded.rank !== 2){
-                        await navigate("/", {replace: true});
+                        navigation.navigate('Home')
                         alertify.error('Accès Impossible !');
                     }
                 })
@@ -36,7 +36,7 @@ function Instructor(props) {
                     console.log(error); // Handle any errors
                 });
         }else{
-            navigate("/login")
+            navigation.navigate('Login')
         }
     }, []);
     const [pageSelected, setPageSelected] = React.useState(6);

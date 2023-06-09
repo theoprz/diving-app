@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Wave from 'react-wavify';
 
 export default function Login() {
     const [email, setEmail] = useState('');
@@ -51,7 +50,6 @@ export default function Login() {
 
     return (
         <View style={styles.container}>
-            <Wave fill="#1277b0" pause={false} options={{height: 80, amplitude: 40, speed: 0.20, points: 4}}/>
             <Text style={styles.title}>Login</Text>
             <View style={styles.form}>
                 <View style={styles.inputContainer}>
