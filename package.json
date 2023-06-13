@@ -17,10 +17,13 @@
     "axios": "^1.4.0",
     "expo": "~48.0.18",
     "expo-status-bar": "~1.4.4",
+    "moment": "^2.29.4",
     "react": "18.2.0",
     "react-native": "0.71.8",
     "react-native-bottom-menu": "^0.1.8",
     "react-native-material-ripple": "^0.9.1",
+    "react-native-responsive-screen": "^1.4.2",
+    "react-native-switch": "^1.5.1",
     "react-router-dom": "^6.12.1"
   },
   "devDependencies": {

@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         elevation: 3,
-        backgroundColor: '#2811df',
+        backgroundColor: '#7dd3fc',
     },
     login: {
         fontSize: 16,
