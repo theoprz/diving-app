@@ -11,7 +11,8 @@ async function getToken(){
 async function setToken(token){
     await AsyncStorage.setItem('token', token);
 }
-
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+const Tab = createBottomTabNavigator();
 const Home = () => {
     const [isDarkMode, setIsDarkMode] = useState(false);
     const navigation = useNavigation();
