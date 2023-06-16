@@ -109,8 +109,15 @@ function Instructor(props) {
                 />
                 <Item
                     size={22}
-                    name="alert"
-                    text="Test"
+                    name="person-fill"
+                    text="Diver"
+                    type="Octicons"
+                    onPress={() => {navigation.navigate('Diver')}}
+                />
+                <Item
+                    size={22}
+                    name="key"
+                    text="Dive Director"
                     type="Octicons"
                     onPress={() => {navigation.navigate('Instructor')}}
                 />

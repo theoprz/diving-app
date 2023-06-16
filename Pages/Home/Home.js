@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Switch } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BottomMenu, Item } from "react-native-bottom-menu";
 import { useNavigation } from '@react-navigation/native';
+import { View, Text, Image, StyleSheet, Switch, ScrollView, Dimensions } from 'react-native';
+import plongeeImage from '../../Component/ImgHome/plongee.png';
 
 async function getToken(){
     return await AsyncStorage.getItem('token');
@@ -12,20 +13,35 @@ async function setToken(token){
     await AsyncStorage.setItem('token', token);
 }
 
-const Home = () => {
-    const [isDarkMode, setIsDarkMode] = useState(false);
+const Home = () =>{
     const navigation = useNavigation();
 
-    const toggleDarkMode = () => {
-        setIsDarkMode(!isDarkMode);
-    };
-
-    const containerStyle = isDarkMode ? styles.containerDark : styles.containerLight;
-    const textStyle = isDarkMode ? styles.textDark : styles.textLight;
-
     return (
-        <View style={[containerStyle, styles.container]}>
-            <Text style={[styles.text, textStyle]}>Home</Text>
+        <View style={styles.container}>
+            <ScrollView contentContainerStyle={styles.contentContainer}>
+                <View style={styles.card}>
+                    <Text style={styles.title}>Welcome to the Sub Aquatic Group Wattignies!</Text>
+                    <View style={styles.imageContainer}>
+                        <Image source={plongeeImage} style={styles.image} resizeMode="contain" />
+                    </View>
+                    <Text style={styles.text}>
+                        The Sub Aquatic Group Wattignies is a passionate and dynamic diving club located in the beautiful city of Wattignies. Whether you are a beginner or an experienced diver, our club offers you the opportunity to discover the hidden wonders of the depths.
+                    </Text>
+                    <Text style={styles.text}>
+                        Our club consists of a team of enthusiastic and qualified divers, all driven by the same passion for underwater exploration. We believe in safety and place great importance on the training of our members. Our experienced instructors are certified and will ensure that you acquire the necessary skills to dive with confidence.
+                    </Text>
+                    <Text style={styles.text}>
+                        As a member of the Sub Aquatic Group Wattignies, you will have access to a variety of exciting activities. Whether you want to dive in local waters or explore exotic destinations, our club regularly organizes thrilling diving trips. From colorful marine life to mysterious wrecks, each dive is a unique adventure that will broaden your horizons.
+                    </Text>
+                    <Text style={styles.text}>
+                        We take pride in creating a friendly and welcoming atmosphere where divers of all levels can come together, share their experiences, and build lasting connections. Whether you're looking for a relaxing leisure activity or an opportunity to push your limits, the Sub Aquatic Group Wattignies is the perfect place for you.
+                    </Text>
+                    <Text style={styles.text}>
+                        Join us now and discover the fascinating world of scuba diving with the Sub Aquatic Group Wattignies. Dive into adventure and create unforgettable memories with our club.
+                    </Text>
+                </View>
+            </ScrollView>
+
             <BottomMenu>
                 <Item
                     size={22}
@@ -36,52 +52,75 @@ const Home = () => {
                 />
                 <Item
                     size={22}
-                    name="alert"
-                    text="Test"
+                    name="person-fill"
+                    text="Diver"
+                    type="Octicons"
+                    onPress={() => {navigation.navigate('Diver')}}
+                />
+                <Item
+                    size={22}
+                    name="key"
+                    text="Dive Director"
                     type="Octicons"
                     onPress={() => {navigation.navigate('Instructor')}}
                 />
-                <View style={styles.switchContainer}>
-                    <Switch
-                        value={isDarkMode}
-                        onValueChange={toggleDarkMode}
-                        trackColor={{ false: '#999', true: '#7dd3fc' }}
-                        thumbColor={isDarkMode ? '#333333' : '#666666'}
-                    />
-                </View>
+                <Item
+                    size={22}
+                    name="settings"
+                    text="Settings"
+                    type="gala"
+                    onPress={() => {navigation.navigate('Settings')}}
+                />
             </BottomMenu>
         </View>
     );
-};
+}
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: 'center',
         justifyContent: 'center',
+        padding: 8,
     },
-    containerLight: {
-        backgroundColor: '#fff',
+    contentContainer: {
+        flexGrow: 1,
+        paddingBottom: 16,
+
     },
-    containerDark: {
-        backgroundColor: '#121212',
+    card: {
+        backgroundColor: 'white',
+        borderRadius: 8,
+        shadowColor: '#000',
+        shadowOpacity: 0.2,
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        padding: 16,
+        marginBottom: 60,
+        marginTop: 16,
     },
-    textLight: {
-        color: '#000',
+    title: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 16,
+        textAlign: 'center',
     },
-    textDark: {
-        color: '#fff',
+    imageContainer: {
+        marginBottom: 12,
+        alignItems: 'center',
+    },
+    image: {
+        width: '100%',
+        maxWidth: Dimensions.get('window').width - 32,
+        height: Dimensions.get('window').width * 0.5,
     },
     text: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        alignSelf: 'center',
+        fontSize: 16,
+        color: '#555',
+        marginBottom: 12,
+        textAlign: 'justify',
     },
-    switchContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-
 });
 
 export default Home;

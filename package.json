@@ -11,6 +11,7 @@
   "dependencies": {
     "@freakycoder/react-native-helpers": "^2.0.2",
     "@react-native-async-storage/async-storage": "1.17.11",
+    "@react-native-community/datetimepicker": "^7.1.0",
     "@react-navigation/native": "^6.1.6",
     "@react-navigation/native-stack": "^6.9.12",
     "alertifyjs": "^1.13.1",
@@ -21,6 +22,8 @@
     "react": "18.2.0",
     "react-native": "0.71.8",
     "react-native-bottom-menu": "^0.1.8",
+    "react-native-datepicker": "^1.7.2",
+    "react-native-linear-gradient": "^2.7.2",
     "react-native-material-ripple": "^0.9.1",
     "react-native-responsive-screen": "^1.4.2",
     "react-native-switch": "^1.5.1",
