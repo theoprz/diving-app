@@ -12,8 +12,8 @@ async function getToken(){
 async function setToken(token){
     await AsyncStorage.setItem('token', token);
 }
-
-const Home = () =>{
+const Home = () => {
+    const [isDarkMode, setIsDarkMode] = useState(false);
     const navigation = useNavigation();
 
     return (
