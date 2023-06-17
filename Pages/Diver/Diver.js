@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
+import {BottomMenu, Item} from "react-native-bottom-menu";
 import { View, Text, Pressable, StyleSheet, Switch, Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import {BottomMenu, Item} from "react-native-bottom-menu";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios from "axios";
 
 
 async function getToken(){
@@ -16,17 +15,36 @@ async function setToken(token){
 }
 
 
-function Diver(props) {
-    const [isDarkMode, setIsDarkMode] = useState(false);
+function Diver() {
     const navigation = useNavigation();
+    const [isDarkModeEnabled, setIsDarkModeEnabled] = useState(false);
+    console.log('Dtest ' + isDarkModeEnabled);
 
-    const toggleDarkMode = () => {
-        setIsDarkMode(!isDarkMode);
+
+    useEffect(() => {
+        // Load dark mode state from storage or use default value
+        const loadDarkModeState = async () => {
+            const darkModeState = await AsyncStorage.getItem('isDarkModeEnabled');
+            setIsDarkModeEnabled(darkModeState === 'true');
+            console.log('Dload ' + isDarkModeEnabled);
+
+        };
+
+        loadDarkModeState();
+        console.log('Dload2 ' + isDarkModeEnabled);
+
+    }, []);
+
+    const toggleDarkMode = async (value) => {
+        setIsDarkModeEnabled(value);
+        console.log('Dtoggle ' + isDarkModeEnabled);
+        await AsyncStorage.setItem('isDarkModeEnabled', value.toString());
+        console.log('Dtoggle2 ' + isDarkModeEnabled);
+
     };
 
-
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, isDarkModeEnabled && styles.darkContainer]}>
             <Text style={styles.title}>Diver</Text>
             <View style={styles.content}>
                 <View style={styles.row}>
@@ -99,14 +117,13 @@ function Diver(props) {
                     type="Octicons"
                     onPress={() => {navigation.navigate('Instructor')}}
                 />
-                <View style={styles.switchContainer}>
-                    <Switch
-                        value={isDarkMode}
-                        onValueChange={toggleDarkMode}
-                        trackColor={{ false: '#999', true: '#7dd3fc' }}
-                        thumbColor={isDarkMode ? '#333333' : '#666666'}
-                    />
-                </View>
+                <Item
+                    size={22}
+                    name="settings"
+                    text="Settings"
+                    type="gala"
+                    onPress={() => {navigation.navigate('Settings')}}
+                />
             </BottomMenu>
         </View>
     );
@@ -117,6 +134,9 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
+    },
+    darkContainer: {
+        backgroundColor: "#000",
     },
     content: {
         flex: 1,

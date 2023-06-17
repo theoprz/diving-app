@@ -1,23 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, Switch, StyleSheet, Pressable, TextInput, ScrollView } from 'react-native';
 import { BottomMenu, Item } from "react-native-bottom-menu";
 import { useNavigation } from '@react-navigation/native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import axios from "axios";
-import DatePicker from 'react-native-datepicker';
+import DatePicker from 'react-native-datepicker'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ThemeContext } from '../../Component/Theme/SwitchTheme';
+
 
 
 function Settings(props) {
-    const [isDarkMode, setIsDarkMode] = useState(false);
     const navigation = useNavigation();
     const [personalInformation, setPersonalInformation] = useState({});
     const [modifyInfo, setModifyInfo] = useState(false);
     const [valuesModified, setValuesModified] = useState({});
     const [showCancelButton, setShowCancelButton] = useState(false);
     const [birthDate, setBirthDate] = useState(personalInformation.birth_date ? personalInformation.birth_date.slice(0, 10) : '');
+    const { isDarkModeEnabled, toggleDarkMode } = useContext(ThemeContext);
 
-    const toggleDarkMode = () => {
-        setIsDarkMode(!isDarkMode);
+    const handleToggleDarkMode = () => {
+        toggleDarkMode(!isDarkModeEnabled);
     };
 
     const handleLogout = () => {
@@ -39,7 +42,6 @@ function Settings(props) {
 
     const handleSubmit = () => {
         const updatedValues = { ...valuesModified, birth_date: birthDate };
-
         axios
             .put('/api/users/personal/' + props.userId, updatedValues)
             .then((response) => {
@@ -208,10 +210,10 @@ function Settings(props) {
                                 <Text style={styles.settingText}>Dark Mode</Text>
                             </View>
                             <Switch
-                                value={isDarkMode}
-                                onValueChange={toggleDarkMode}
+                                value={isDarkModeEnabled}
+                                onValueChange={handleToggleDarkMode}
                                 trackColor={{ false: '#999', true: '#7dd3fc' }}
-                                thumbColor={isDarkMode ? '#333333' : '#666666'}
+                                thumbColor={isDarkModeEnabled ? '#333333' : '#666666'}
                             />
                         </View>
                         <Pressable style={styles.logoutButton} onPress={handleLogout}>
@@ -226,28 +228,28 @@ function Settings(props) {
                     name="home"
                     text="Home"
                     type="Octicons"
-                    onPress={() => { navigation.navigate('Home') }}
+                    onPress={() => {navigation.navigate('Home')}}
                 />
                 <Item
                     size={22}
                     name="person-fill"
                     text="Diver"
                     type="Octicons"
-                    onPress={() => { navigation.navigate('Diver') }}
+                    onPress={() => {navigation.navigate('Diver')}}
                 />
                 <Item
                     size={22}
                     name="key"
                     text="Dive Director"
                     type="Octicons"
-                    onPress={() => { navigation.navigate('Instructor') }}
+                    onPress={() => {navigation.navigate('Instructor')}}
                 />
                 <Item
                     size={22}
                     name="settings"
                     text="Settings"
                     type="gala"
-                    onPress={() => { navigation.navigate('Settings') }}
+                    onPress={() => {navigation.navigate('Settings')}}
                 />
             </BottomMenu>
         </View>

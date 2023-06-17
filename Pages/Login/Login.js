@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
+
 export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -28,7 +29,6 @@ export default function Login() {
                 });
             }
         };
-
         fetchData();
     }, []);
 
@@ -57,7 +57,7 @@ export default function Login() {
 
 
     return (
-            <View style={styles.container}>
+        <View style={styles.container}>
             <Text style={styles.title}>Login</Text>
             <View style={styles.form}>
                 <View style={styles.inputContainer}>
