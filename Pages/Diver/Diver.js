@@ -1,47 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext} from "react";
 import {BottomMenu, Item} from "react-native-bottom-menu";
 import { View, Text, Pressable, StyleSheet, Switch, Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
-
-async function getToken(){
-    return await AsyncStorage.getItem('token');
-}
-
-async function setToken(token){
-    await AsyncStorage.setItem('token', token);
-}
+import { ThemeContext } from "../../Component/Theme/SwitchTheme";
 
 
 function Diver() {
     const navigation = useNavigation();
-    const [isDarkModeEnabled, setIsDarkModeEnabled] = useState(false);
-    console.log('Dtest ' + isDarkModeEnabled);
-
-
-    useEffect(() => {
-        // Load dark mode state from storage or use default value
-        const loadDarkModeState = async () => {
-            const darkModeState = await AsyncStorage.getItem('isDarkModeEnabled');
-            setIsDarkModeEnabled(darkModeState === 'true');
-            console.log('Dload ' + isDarkModeEnabled);
-
-        };
-
-        loadDarkModeState();
-        console.log('Dload2 ' + isDarkModeEnabled);
-
-    }, []);
-
-    const toggleDarkMode = async (value) => {
-        setIsDarkModeEnabled(value);
-        console.log('Dtoggle ' + isDarkModeEnabled);
-        await AsyncStorage.setItem('isDarkModeEnabled', value.toString());
-        console.log('Dtoggle2 ' + isDarkModeEnabled);
-
-    };
+   const {isDarkModeEnabled } = useContext(ThemeContext);
 
     return (
         <View style={[styles.container, isDarkModeEnabled && styles.darkContainer]}>

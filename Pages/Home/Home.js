@@ -1,9 +1,10 @@
-import React, { useState, useEffect} from 'react';
+import React, { useState, useEffect, useContext} from 'react';
 import { BottomMenu, Item } from "react-native-bottom-menu";
 import { View, Text, Image, StyleSheet, ScrollView, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import plongeeImage from '../../Component/ImgHome/plongee.png';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { ThemeContext } from '../../Component/Theme/SwitchTheme';
 
 
 async function getToken(){
@@ -15,23 +16,7 @@ async function setToken(token){
 }
 function Home () {
     const navigation = useNavigation();
-    const [isDarkModeEnabled, setIsDarkModeEnabled] = useState(false);
-    console.log('jsuis un guerrier')
-    useEffect(() => {
-        // Load dark mode state from storage or use default value
-        const loadDarkModeState = async () => {
-            const darkModeState = await AsyncStorage.getItem('isDarkModeEnabled');
-            setIsDarkModeEnabled(darkModeState === 'true');
-        };
-        loadDarkModeState();
-
-    }, []);
-
-    const toggleDarkMode = async (value) => {
-        setIsDarkModeEnabled(value);
-        await AsyncStorage.setItem('isDarkModeEnabled', value.toString());
-
-    };
+    const {isDarkModeEnabled} = useContext(ThemeContext);
 
     return (
         <View style={[styles.container, isDarkModeEnabled && styles.darkContainer]}>
