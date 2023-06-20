@@ -11,7 +11,15 @@ import HomeScreen from './Pages/Home/Home';
 import InstructorScreen from './Pages/Instructor/Instructor';
 import SettingsScreen from './Pages/Settings/Settings';
 import ProfilScreen from './Pages/DiverInfo/Profil';
+
+//Diver Component
 import DiverInfoScreen from "./Component/DiverComponent/DiverInfo/DiverInfo";
+
+//Admin Component
+import DiverListScreen from "./Component/AdminComponnent/DiverList/DiverList";
+import DiveManagementScreen from "./Component/AdminComponnent/DiveManagement/DiveManagement";
+import DivesHistory from "./Component/AdminComponnent/DivesHistory/DivesHistory";
+import DiveModificationScreen from "./Component/AdminComponnent/DiveManagement/DiveModification";
 
 const Stack = createNativeStackNavigator();
 
@@ -42,6 +50,10 @@ const App = () => {
                     <Stack.Screen name="Instructor" options={{ headerShown: false }} component={InstructorScreen} />
                     <Stack.Screen name="Profil" options={{ headerShown: true }} component={ProfilScreen} />
                     <Stack.Screen name="Diver Information" options={{ headerShown: true }} component={DiverInfoScreen} />
+                    <Stack.Screen name="Diver List" options={{ headerShown: true }} component={DiverListScreen} />
+                    <Stack.Screen name="Dive Management" options={{ headerShown: true }} component={DiveManagementScreen} />
+                    <Stack.Screen name="Dive Modification" options={{ headerShown: true }} component={DiveModificationScreen} />
+                    <Stack.Screen name="Dives History" options={{ headerShown: true }} component={DivesHistory} />
                 </Stack.Navigator>
             </NavigationContainer>
         </ThemeProvider>
