@@ -3,7 +3,6 @@ import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity } from 
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import DownloadButton from "../DownloadButton/DownloadButton";
 
 async function getDatas(setDives) {
     axios

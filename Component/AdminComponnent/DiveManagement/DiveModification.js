@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
-import RNPickerSelect from "react-native-picker-select";
-import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import DownloadButton from "../DownloadButton/DownloadButton";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from "moment";
+import RNPickerSelect from 'react-native-picker-select';
 
 
 function DiveModification({ route, navigation }) {
@@ -57,11 +56,12 @@ function DiveModification({ route, navigation }) {
     };
 
     const handleSave = async () => {
+        console.log(originalDive.dive_site)
         const updatedDive = {
-            name,
-            status,
+            name: name,
+            status: status,
             dive_site: diveSite, // Convert diveSite to number before saving
-            comment,
+            comment: comment,
             date_begin: beginDate.toISOString(),
             date_end: endDate.toISOString(),
             place_number: numOfPlaces,
@@ -69,58 +69,56 @@ function DiveModification({ route, navigation }) {
             diver_price: diverPrice,
             instructor_price: instructorPrice,
             surface_security: surfaceSecurity,
-            maxPPO2,
+            max_ppo2: maxPPO2,
         };
 
-        try {
-            const token = await getToken();
-            await axios.put(`http://93.104.215.68:5000/api/dives/${dives.id}`, updatedDive, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            // Update successful, navigate back to Dive Modification
-            await setIsEditing(false);
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
-    const handleCancel = () => {
+        const token = await getToken();
+        await axios.put(`http://93.104.215.68:5000/api/dives/update/${originalDive.id}`, updatedDive, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }).then((response) => {
+            console.log(response.status);
+        });
+        // Update successful, navigate back to Dive Modification
         setIsEditing(false);
-        // Reset the input fields to their original values
-        setName(originalDive.name);
-        setStatus(originalDive.status);
-        setDiveSite(originalDive.dive_site);
-        setComment(originalDive.comment);
-        setBeginDate(new Date(originalDive.date_begin));
-        setEndDate(new Date(originalDive.date_end));
-        setNumOfPlaces(originalDive.place_number);
-        setPlacesRegistered(originalDive.registered_place);
-        setDiverPrice(originalDive.diver_price);
-        setInstructorPrice(originalDive.instructor_price);
-        setSurfaceSecurity(originalDive.surface_security);
-        setMaxPPO2(originalDive.maxPPO2);
-    };
+};
 
-    const getToken = async () => {
-        return await AsyncStorage.getItem("token");
-    };
+const handleCancel = () => {
+    setIsEditing(false);
+    // Reset the input fields to their original values
+    setName(originalDive.name);
+    setStatus(originalDive.status);
+    setDiveSite(originalDive.dive_site);
+    setComment(originalDive.comment);
+    setBeginDate(formatDate(originalDive.date_begin));
+    setEndDate(formatDate(originalDive.date_end));
+    setNumOfPlaces(originalDive.place_number);
+    setPlacesRegistered(originalDive.registered_place);
+    setDiverPrice(originalDive.diver_price);
+    setInstructorPrice(originalDive.instructor_price);
+    setSurfaceSecurity(originalDive.surface_security);
+    setMaxPPO2(originalDive.maxPPO2);
+};
 
-    useEffect(() => {
-        // Fetch dive sites list from the database
-        fetchDiveSites();
-    }, []);
+const getToken = async () => {
+    return await AsyncStorage.getItem("token");
+};
 
-    async function fetchDiveSites() {
-        try {
-            const response = await axios.get("http://93.104.215.68:5000/api/sites/all");
-            const sites = response.data;
-            setDiveSitesList(sites);
-        } catch (error) {
-            console.log(error);
-        }
+useEffect(() => {
+    // Fetch dive sites list from the database
+    fetchDiveSites();
+}, []);
+
+async function fetchDiveSites() {
+    try {
+        const response = await axios.get("http://93.104.215.68:5000/api/sites/all");
+        const sites = response.data;
+        setDiveSitesList(sites);
+    } catch (error) {
+        console.log(error);
     }
+}
 
     return (
         <View style={styles.container}>
@@ -132,12 +130,11 @@ function DiveModification({ route, navigation }) {
                     <TextInput style={styles.input} value={status} onChangeText={setStatus} editable={isEditing} />
                     <Text style={styles.label}>Dive Site:</Text>
                     <RNPickerSelect
-                        value={diveSite}
-                        onValueChange={setDiveSite}
-                        items={diveSitesList.map((site) => ({ label: site.name, value: site.id }))} // Use diveSitesList to populate the picker items
-                        disabled={!isEditing}
+                        onValueChange={(value) => setDiveSite(value)}
                         style={pickerSelectStyles}
-                        placeholder={{ label: "Select Dive Site", value: null }}
+                        items={diveSitesList.map((diveSite) => { return { label: diveSite.name, value: diveSite.id } })}
+                        disabled={!isEditing}
+                        placeholder={{ label: "Select a dive site", value: null }}
                     />
                     <Text style={styles.label}>Comment:</Text>
                     <TextInput style={styles.input} value={comment} onChangeText={setComment} editable={isEditing} />
@@ -205,31 +202,32 @@ function DiveModification({ route, navigation }) {
                         onChangeText={setSurfaceSecurity}
                         editable={false}
                     />
+               
                 </View>
                 {!isEditing ? (
-                    <View style={styles.buttonsDandE}>
-                        <DownloadButton diveId={dives.id}/>
-                        <TouchableOpacity style={styles.editButton} onPress={handleEdit}>
-                            <Text style={styles.editButtonText}>Edit</Text>
-                        </TouchableOpacity>
-                    </View>
+                        <View style={styles.buttonsDandE}>
+                            <DownloadButton diveId={dives.id}/>
+                            <TouchableOpacity style={styles.editButton} onPress={handleEdit}>
+                                <Text style={styles.editButtonText}>Edit</Text>
+                            </TouchableOpacity>
+                        </View>
 
 
-                ) : (
-                    <View style={styles.buttonsContainer}>
-                        <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-                            <Text style={styles.saveButtonText}>Save</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
-                            <Text style={styles.cancelButtonText}>Cancel</Text>
-                        </TouchableOpacity>
-                    </View>
-                )}
+            ) : (
+                <View style={styles.buttonsContainer}>
+                    <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+                        <Text style={styles.saveButtonText}>Save</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
+                        <Text style={styles.cancelButtonText}>Cancel</Text>
+                    </TouchableOpacity>
+                </View>
+            )}
 
 
-            </ScrollView>
-        </View>
-    );
+        </ScrollView>
+    </View>
+);
 }
 
 const styles = StyleSheet.create({
@@ -269,6 +267,9 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
     },
+    buttonsDandE: {
+        flexDirection: "row-reverse",
+    },
     editButton: {
         flex: 1,
         backgroundColor: "#007AFF",
@@ -278,11 +279,6 @@ const styles = StyleSheet.create({
         marginLeft: 10,
         alignItems: "center",
         marginBottom: "15%",
-    },
-    buttonsDandE: {
-        flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "center",
     },
     editButtonText: {
         color: "#fff",
