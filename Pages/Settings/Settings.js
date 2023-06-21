@@ -24,7 +24,8 @@ function Settings(props) {
     };
 
     const handleLogout = () => {
-        console.log("logout"); // Effectuer les actions de déconnexion ici
+        AsyncStorage.removeItem('token');
+        navigation.navigate('Login');
     };
 
     useEffect(() => {
