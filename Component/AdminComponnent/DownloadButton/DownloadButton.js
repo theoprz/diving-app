@@ -40,12 +40,12 @@ function DownloadButton({ dive }) {
             ) : null}
             <TouchableOpacity
                 style={{
+                    flex: 1,
                     backgroundColor: "#007AFF",
                     borderRadius: 20,
                     paddingHorizontal: 20,
                     paddingVertical: 10,
                     marginRight: 10,
-                    flex: 1,
                     alignItems: "center",
                     marginBottom: "15%",
                 }}

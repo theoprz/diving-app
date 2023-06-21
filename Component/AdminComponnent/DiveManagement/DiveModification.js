@@ -5,35 +5,42 @@ import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import DownloadButton from "../DownloadButton/DownloadButton";
+import DateTimePicker from '@react-native-community/datetimepicker';
+import moment from "moment";
+
 
 function DiveModification({ route, navigation }) {
     const { dives } = route.params;
+    const [name, setName] = useState(dives?.name || "");
+    const [status, setStatus] = useState(dives?.status || "");
+    const [diveSite, setDiveSite] = useState(dives?.dive_site || "");
+    const [comment, setComment] = useState(dives?.comment || "");
+    const [beginDate, setBeginDate] = useState(new Date(dives?.date_begin) || new Date());
+    const [endDate, setEndDate] = useState(new Date(dives?.date_end) || new Date());
+    const [numOfPlaces, setNumOfPlaces] = useState(dives?.place_number || 0);
+    const [placesRegistered, setPlacesRegistered] = useState(dives?.registered_place || 0);
+    const [diverPrice, setDiverPrice] = useState(dives?.diver_price || 0);
+    const [instructorPrice, setInstructorPrice] = useState(dives?.instructor_price || 0);
+    const [surfaceSecurity, setSurfaceSecurity] = useState(dives?.surface_security || 0);
+    const [maxPPO2, setMaxPPO2] = useState(dives?.maxPPO2 || 0);
     const [isEditing, setIsEditing] = useState(false);
-    const [name, setName] = useState(dives.name);
-    const [status, setStatus] = useState(dives.status);
-    const [diveSite, setDiveSite] = useState(dives.dive_site);
-    const [comment, setComment] = useState(dives.comment);
-    const [beginDate, setBeginDate] = useState(formatDate(dives.date_begin));
-    const [endDate, setEndDate] = useState(formatDate(dives.date_end));
-    const [numOfPlaces, setNumOfPlaces] = useState(dives.place_number);
-    const [placesRegistered, setPlacesRegistered] = useState(dives.registered_place);
-    const [diverPrice, setDiverPrice] = useState(dives.diver_price);
-    const [instructorPrice, setInstructorPrice] = useState(dives.instructor_price);
-    const [surfaceSecurity, setSurfaceSecurity] = useState(dives.surface_security);
-    const [maxPPO2, setMaxPPO2] = useState(dives.maxPPO2);
     const originalDive = { ...dives }; // Copy of original dive object
     const [diveSitesList, setDiveSitesList] = useState([]); // State for dive sites list
-    console.log(diveSite);
-
 
     function formatDate(date) {
-        const formattedDate = new Date(date).toLocaleDateString("en-US", {
-            year: "numeric",
+        const options = {
+            year: "2-digit",
             month: "2-digit",
             day: "2-digit",
-        });
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+        };
+        const formattedDate = date.toLocaleDateString("en-US", options);
+        console.log(formattedDate);
         return formattedDate;
     }
+
 
     function registrationPlace(placesRegistered) {
         if (placesRegistered === 0) {
@@ -55,8 +62,8 @@ function DiveModification({ route, navigation }) {
             status,
             dive_site: diveSite, // Convert diveSite to number before saving
             comment,
-            date_begin: beginDate,
-            date_end: endDate,
+            date_begin: beginDate.toISOString(),
+            date_end: endDate.toISOString(),
             place_number: numOfPlaces,
             registered_place: placesRegistered,
             diver_price: diverPrice,
@@ -86,8 +93,8 @@ function DiveModification({ route, navigation }) {
         setStatus(originalDive.status);
         setDiveSite(originalDive.dive_site);
         setComment(originalDive.comment);
-        setBeginDate(formatDate(originalDive.date_begin));
-        setEndDate(formatDate(originalDive.date_end));
+        setBeginDate(new Date(originalDive.date_begin));
+        setEndDate(new Date(originalDive.date_end));
         setNumOfPlaces(originalDive.place_number);
         setPlacesRegistered(originalDive.registered_place);
         setDiverPrice(originalDive.diver_price);
@@ -135,15 +142,44 @@ function DiveModification({ route, navigation }) {
                     <Text style={styles.label}>Comment:</Text>
                     <TextInput style={styles.input} value={comment} onChangeText={setComment} editable={isEditing} />
                     <Text style={styles.label}>Begin Date:</Text>
-                    <TextInput style={styles.input} value={beginDate} onChangeText={setBeginDate} editable={isEditing} />
+                    {isEditing ? (
+                        <DateTimePicker
+                            value={beginDate}
+                            mode="datetime"
+                            display="default"
+                            onChange={(event, selectedDate) => {
+                                if (selectedDate) {
+                                    setBeginDate(selectedDate); // Update with the selected date
+                                }
+                            }}
+                        />
+                    ) : (
+                        <TextInput style={styles.input} value={formatDate(beginDate)} onChangeText={setBeginDate} editable={isEditing} />
+
+                    )}
                     <Text style={styles.label}>End Date:</Text>
-                    <TextInput style={styles.input} value={endDate} onChangeText={setEndDate} editable={isEditing} />
+                    {isEditing ? (
+                        <DateTimePicker
+                            value={endDate}
+                            mode="datetime"
+                            display="default"
+                            onChange={(event, selectedDate) => {
+                                if (selectedDate) {
+                                    setEndDate(selectedDate); // Update with the selected date
+                                }
+                            }}
+                        />
+                    ) : (
+                        <TextInput style={styles.input} value={formatDate(endDate)} onChangeText={setEndDate} editable={isEditing} />
+
+                    )}
                     <Text style={styles.label}>Number of Places:</Text>
                     <TextInput
                         style={styles.input}
                         value={numOfPlaces.toString()}
                         onChangeText={setNumOfPlaces}
                         editable={isEditing}
+                        keyboardType="numeric"
                     />
                     <Text style={styles.label}>Places Registered:</Text>
                     <TextInput
@@ -153,13 +189,14 @@ function DiveModification({ route, navigation }) {
                         editable={false}
                     />
                     <Text style={styles.label}>Diver Price:</Text>
-                    <TextInput style={styles.input} value={diverPrice.toString()} onChangeText={setDiverPrice} editable={isEditing} />
+                    <TextInput style={styles.input} value={diverPrice.toString()} onChangeText={setDiverPrice} editable={isEditing} keyboardType="numeric"/>
                     <Text style={styles.label}>Instructor Price:</Text>
                     <TextInput
                         style={styles.input}
                         value={instructorPrice.toString()}
                         onChangeText={setInstructorPrice}
                         editable={isEditing}
+                        keyboardType="numeric"
                     />
                     <Text style={styles.label}>Surface Security:</Text>
                     <TextInput
@@ -168,16 +205,14 @@ function DiveModification({ route, navigation }) {
                         onChangeText={setSurfaceSecurity}
                         editable={false}
                     />
-                    <Text style={styles.label}>Max PPO2:</Text>
-                    <TextInput style={styles.input} value={maxPPO2} onChangeText={setMaxPPO2} editable={isEditing} />
                 </View>
                 {!isEditing ? (
-                        <View style={styles.buttonsDandE}>
-                            <DownloadButton diveId={dives.id}/>
-                            <TouchableOpacity style={styles.editButton} onPress={handleEdit}>
-                                <Text style={styles.editButtonText}>Edit</Text>
-                            </TouchableOpacity>
-                        </View>
+                    <View style={styles.buttonsDandE}>
+                        <DownloadButton diveId={dives.id}/>
+                        <TouchableOpacity style={styles.editButton} onPress={handleEdit}>
+                            <Text style={styles.editButtonText}>Edit</Text>
+                        </TouchableOpacity>
+                    </View>
 
 
                 ) : (
@@ -201,6 +236,14 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 15,
+        shadowColor: '#000',
+        shadowOpacity: 0.2,
+        shadowOffset: {
+            width: 0,
+            height: -4,
+        },
+        shadowRadius: 4,
+        elevation: 4,
     },
     formContainer: {
         marginBottom: 20,
@@ -287,7 +330,18 @@ const pickerSelectStyles = StyleSheet.create({
         color: "black",
         paddingRight: 30,
         backgroundColor: "#fff",
-    }
+    },
+    inputAndroid: {
+        fontSize: 16,
+        paddingHorizontal: 10,
+        paddingVertical: 8,
+        borderWidth: 0.5,
+        borderColor: "gray",
+        borderRadius: 8,
+        color: "black",
+        paddingRight: 30,
+        backgroundColor: "#fff",
+    },
 });
 
 export default DiveModification;

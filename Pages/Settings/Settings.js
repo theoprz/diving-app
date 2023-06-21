@@ -4,11 +4,9 @@ import { BottomMenu, Item } from "react-native-bottom-menu";
 import { useNavigation } from '@react-navigation/native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import axios from "axios";
-import DatePicker from 'react-native-datepicker'
+import DateTimePicker from '@react-native-community/datetimepicker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ThemeContext } from '../../Component/Theme/SwitchTheme';
-
-
 
 function Settings(props) {
     const navigation = useNavigation();
@@ -114,34 +112,15 @@ function Settings(props) {
                             <View style={styles.inputContainer}>
                                 <Text style={styles.label}>Birth Date:</Text>
                                 {modifyInfo ? (
-                                    <DatePicker
-                                        modal={true}
-                                        useNativeDriver={false}
-                                        style={styles.datePicker}
-                                        date={birthDate}
+                                    <DateTimePicker
+                                        value={birthDate ? new Date(birthDate) : new Date()}
                                         mode="date"
-                                        placeholder="Select date"
-                                        format="YYYY-MM-DD"
-                                        minDate="1900-01-01"
-                                        maxDate={new Date()}
-                                        confirmBtnText="Confirm"
-                                        cancelBtnText="Cancel"
-                                        customStyles={{
-                                            dateIcon: {
-                                                position: 'absolute',
-                                                left: 0,
-                                                top: 4,
-                                                marginLeft: 0,
-                                            },
-                                            dateInput: {
-                                                marginLeft: 36,
-                                                borderWidth: 1,
-                                                borderColor: '#ccc',
-                                                borderRadius: 5,
-                                            },
-                                            // Add other custom styles as needed
+                                        display="default"
+                                        onChange={(event, selectedDate) => {
+                                            if (selectedDate) {
+                                                setBirthDate(selectedDate.toISOString().slice(0, 10)); // Mettre à jour avec la valeur formatée
+                                            }
                                         }}
-                                        onDateChange={(date) => setBirthDate(date)}
                                     />
                                 ) : (
                                     <TextInput
@@ -203,7 +182,6 @@ function Settings(props) {
                         </View>
                     </View>
                     <Text style={styles.title}>Settings</Text>
-
                     <View style={styles.settingContainer}>
                         <View style={styles.darkContainer}>
                             <View style={styles.darkTextContainer}>
@@ -212,7 +190,7 @@ function Settings(props) {
                             <Switch
                                 value={isDarkModeEnabled}
                                 onValueChange={handleToggleDarkMode}
-                                trackColor={{ false: '#999', true: '#7dd3fc' }}
+                                trackColor={{ false: '#111', true: '#7dd3fc' }}
                                 thumbColor={isDarkModeEnabled ? '#333333' : '#666666'}
                             />
                         </View>
@@ -222,20 +200,13 @@ function Settings(props) {
                     </View>
                 </View>
             </ScrollView>
-            <BottomMenu>
+            <BottomMenu style={styles.bottomMenu}>
                 <Item
                     size={22}
                     name="home"
                     text="Home"
                     type="Octicons"
                     onPress={() => {navigation.navigate('Home')}}
-                />
-                <Item
-                    size={22}
-                    name="person-fill"
-                    text="Diver"
-                    type="Octicons"
-                    onPress={() => {navigation.navigate('Diver')}}
                 />
                 <Item
                     size={22}
@@ -260,6 +231,15 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         height: hp('100%'),
+        backgroundColor: '#8F908D',
+        shadowColor: '#000',
+        shadowOpacity: 0.2,
+        shadowOffset: {
+            width: 0,
+            height: -4,
+        },
+        shadowRadius: 4,
+        elevation: 4,
     },
     scrollContainer: {
         flexGrow: 1,
@@ -305,19 +285,26 @@ const styles = StyleSheet.create({
     },
     input: {
         borderWidth: 1,
-        borderColor: '#ccc',
+        borderColor: '#000',
         borderRadius: 5,
+        shadowRadius: 5,
+        shadowOpacity: 0.5,
+        shadowOffset: { width: 1, height: 2 },
+        backgroundColor: '#fff',
         padding: 10,
     },
     buttonContainer: {
         marginTop: hp('2%'),
         alignItems: 'center',
     },
+    bottomMenu: {
+        backgroundColor: 'blue', // Change the background color here
+    },
     buttonRow: {
         flexDirection: 'row',
     },
     button: {
-        backgroundColor: '#005a8d',
+        backgroundColor: '#33abff',
         paddingVertical: hp('1%'),
         paddingHorizontal: wp('3%'),
         borderRadius: 5,
@@ -327,7 +314,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#7dd3fc',
     },
     cancelButton: {
-        backgroundColor: '#f44336',
+        backgroundColor: '#0078cc',
         paddingVertical: hp('1%'),
         paddingHorizontal: wp('3%'),
         borderRadius: 5,

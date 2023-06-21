@@ -94,6 +94,14 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: '#fff',
         height: '100%',
+        shadowColor: '#000',
+        shadowOpacity: 0.2,
+        shadowOffset: {
+            width: 0,
+            height: -4,
+        },
+        shadowRadius: 4,
+        elevation: 4,
     },
     title: {
         fontSize: 24,
@@ -128,7 +136,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         elevation: 3,
-        backgroundColor: '#7dd3fc',
+        backgroundColor: '#039',
     },
     login: {
         fontSize: 16,

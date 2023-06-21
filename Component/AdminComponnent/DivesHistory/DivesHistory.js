@@ -1,104 +1,108 @@
-import React, {useState, useEffect, useContext} from "react";
-import {View, Text, TouchableOpacity, Alert, StyleSheet, FlatList, Switch} from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { BottomMenu, Item } from "react-native-bottom-menu";
-import { ThemeContext } from '../../Theme/SwitchTheme';
 
-async function getDatas(setDivers) {
-    try {
-        const response = await axios.get("http://93.104.215.68:5000/api/divers/all");
-        setDivers(response.data);
-    } catch (error) {
-        console.log(error);
-    }
+async function getDatas(setDives) {
+    axios
+        .get("http://93.104.215.68:5000/api/dives/finished")
+        .then((response) => {
+            setDives(response.data);
+        })
+        .catch((error) => {
+            console.log(error);
+        });
 }
 
-async function getToken(){
-    return await AsyncStorage.getItem('token');
+async function getToken() {
+    return await AsyncStorage.getItem("token");
 }
 
-async function setToken(token){
-    await AsyncStorage.setItem('token', token);
+async function setToken(token) {
+    await AsyncStorage.setItem("token", token);
 }
 
 function DivesHistory(props) {
-    const [divers, setDivers] = useState([]);
-    const {isDarkModeEnabled} = useContext(ThemeContext);
+    const [search, setSearch] = useState("");
+    const [dives, setDives] = useState([]);
+
+    const [filteredDives, setFilteredDives] = useState([]);
     const navigation = useNavigation();
 
     useEffect(() => {
         const fetchData = async () => {
-            await getDatas(setDivers);
-            /*
-            const findToken = await AsyncStorage.getItem("token");
-            if (findToken !== null) {
-                try {
-                    const response = await fetch("http://93.104.215.68:5000/api/users/verify", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "x-access-token": findToken,
-                        },
-                        body: JSON.stringify({ token: findToken }),
-                    });
-                    if (!response.ok) {
-                        navigation.navigate("Login");
-                    } else {
-                        const data = await response.json(); // Parse response as JSON
-                        if (data.decoded.rank !== 2) {
-                            await navigation.replace("/Instructor");
-                            Alert.alert("You are not an instructor");
-                        }
-                    }
-                } catch (error) {
-                    console.log(error); // Handle any errors
-                }
-            } else {
-                navigation.navigate("Login");
-            }
-            */
+            await getDatas(setDives);
         };
 
         fetchData();
     }, []);
 
-
-    const data = divers.map((diver) => ({
-        id: diver.id,
-        name: `${diver.last_name} ${diver.first_name}`,
-    }));
-    const containerStyle = isDarkModeEnabled ? styles.containerDark : styles.containerLight;
-    const titleStyle = isDarkModeEnabled ? styles.titleDark : styles.titleLight;
-    const flatStyle = isDarkModeEnabled ? styles.flatDark : styles.flatLight;
-    const itemStyle = isDarkModeEnabled ? styles.itemDark : styles.itemLight;
-    const textStyle = isDarkModeEnabled ? styles.textDark : styles.textLight;
-    const containerListStyle = isDarkModeEnabled ? styles.containerListDark : styles.containerListLight;
-
-    const handleItemClick = (item) => {
-        navigation.navigate("Profil", { item });
-    };
-
-
-    const renderItem = ({ item }) => (
-        <TouchableOpacity style={[itemStyle, styles.item]} onPress={() => handleItemClick(item)}>
-            <Text style={[textStyle, styles.itemText]}>{item.name}</Text>
-        </TouchableOpacity>
-    );
+    useEffect(() => {
+        const filteredResults = dives.filter((dive) =>
+            dive.name.toLowerCase().includes(search.toLowerCase())
+        );
+        setFilteredDives(filteredResults);
+    }, [dives, search]);
 
     return (
-        <View style={[containerStyle, styles.container]}>
-            <Text style={[titleStyle, styles.title]}>Dives History</Text>
-            <FlatList
-                style={[containerListStyle, styles.containerList]}
-                data={data}
-                renderItem={renderItem}
-                keyExtractor={(item) => item.id.toString()}
-                contentContainerStyle={[flatStyle, styles.listContent]}
-                numColumns={1}
-            />
+        <View style={styles.container}>
+            <Text style={styles.title}>Dive Management</Text>
+            <View style={styles.searchContainer}>
+                <View style={styles.inputContainer}>
+                    <Text style={styles.label}>Name :</Text>
+                    <TextInput
+                        style={styles.input}
+                        onChangeText={(text) => setSearch(text)}
+                    />
+                </View>
+            </View>
+            {dives.length === 0 ? (
+                <Text>Loading ...</Text>
+            ) : (
+                <ScrollView>
+                    <View>
+                        <View style={styles.tableRow}>
+                            <Text style={[styles.tableHeader, styles.flex1]}>Name</Text>
+                            <Text style={[styles.tableHeader, styles.flex1]}>Begin Date</Text>
+                            <Text style={[styles.tableHeader, styles.flex1]}>More</Text>
+                        </View>
+                        {filteredDives.map((dive, index) => (
+                            <View
+                                style={[
+                                    styles.tableRow,
+                                    index % 2 === 0 && styles.evenRow,
+                                ]}
+                                key={index}
+                            >
+                                <Text style={styles.tableData}>
+                                    {dive.name}
+                                </Text>
+                                <Text style={styles.tableData}>
+                                    {new Date(dive.date_begin).toISOString().slice(0, 10)}
+                                </Text>
+                                <View style={styles.tableData}>
+                                    <TouchableOpacity
+                                        style={{
+                                            backgroundColor: "#007AFF",
+                                            borderRadius: 20,
+                                            paddingHorizontal: 20,
+                                            paddingVertical: 10,
+                                            alignSelf: "center",
+                                        }}
+                                        onPress={() => {
+                                            navigation.navigate("Dive Information", {dives: dive});
+                                        }}
+                                    >
+                                        <Text style={{ color: "#FFFFFF", fontWeight: "bold" }}>More</Text>
+
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        ))}
+                    </View>
+                </ScrollView>
+            )}
         </View>
     );
 }
@@ -106,77 +110,81 @@ function DivesHistory(props) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingTop: hp('9%'),
-        justifyContent: "center",
-    },
-    containerLight: {
-        backgroundColor: '#fff',
-    },
-    containerDark: {
-        backgroundColor: '#121212',
+        padding: 15,
+        shadowColor: '#000',
+        shadowOpacity: 0.2,
+        shadowOffset: {
+            width: 0,
+            height: -4,
+        },
+        shadowRadius: 4,
+        elevation: 4,
     },
     title: {
-        fontSize: 24,
+        fontSize: 20,
         fontWeight: "bold",
-        justifyContent: "center",
-        textAlign: "center",
-        paddingBottom: "5%",
+        marginBottom: 6,
+        color: "#000",
     },
-    titleLight: {
-        color: '#000',
-    },
-    titleDark: {
-        color: '#fff',
-    },
-    containerList: {
-        marginBottom: hp('10%'),  // 2% of height device screen
-    },
-    containerListLight: {
-        backgroundColor: '#fff',
-    },
-    containerListDark: {
-        backgroundColor: '#121212',
-    },
-    itemLight: {
-        backgroundColor: '#005a8d',
-    },
-    itemDark: {
-        backgroundColor: '#005a8d',
-    },
-    flatLight: {
-        backgroundColor: '#fff',
-    },
-    flatDark: {
-        backgroundColor: '#121212',
-    },
-    listContent: {
-        justifyContent: "center",
-    },
-    item: {
-        flex: 1,
-        borderRadius: 8,
-        margin: 8,
-        padding: 16,
+    searchContainer: {
+        flexDirection: "row",
+        justifyContent: "space-between",
         alignItems: "center",
-        justifyContent: "center",
-        shadowColor: "#7dd3fc",
-        shadowOffset: { width: 1, height: 2 },
-        shadowOpacity: 1,
-        shadowRadius: 4,
-        elevation: 2,
+        marginBottom: 4,
     },
-    itemText: {
-        fontSize: 16,
+    inputContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        height: "100%",
+        marginRight: 10,
+    },
+    label: {
         fontWeight: "bold",
+        marginRight: 2,
+        fontSize: 14,
+        color: "#000",
     },
-    textLight: {
-        color: '#000',
+    input: {
+        borderWidth: 1,
+        borderColor: "#ccc",
+        borderRadius: 5,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        fontSize: 14,
+        width: 150,
+        color: "#000",
     },
-    textDark: {
-        color: '#fff',
+    tableRow: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        borderBottomWidth: 1,
+        borderColor: "#ccc",
+        backgroundColor: "#fff",
     },
-
-
+    evenRow: {
+        backgroundColor: "#f7f7f7",
+    },
+    tableHeader: {
+        flex: 1,
+        textAlign: "center",
+        paddingVertical: 8,
+        paddingHorizontal: 4,
+        fontSize: 14,
+        fontWeight: "bold",
+        color: "#000",
+    },
+    tableData: {
+        flex: 1,
+        textAlign: "center",
+        paddingVertical: 8,
+        paddingHorizontal: 4,
+        fontSize: 14,
+        color: "#000",
+    },
+    flex1: {
+        flex: 1,
+    },
 });
 
 export default DivesHistory;

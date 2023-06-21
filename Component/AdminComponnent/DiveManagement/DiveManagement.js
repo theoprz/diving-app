@@ -64,9 +64,9 @@ function DiveManagement(props) {
                 <ScrollView>
                     <View>
                         <View style={styles.tableRow}>
-                            <Text style={[styles.tableHeader, styles.flex2]}>Name</Text>
+                            <Text style={[styles.tableHeader, styles.flex1]}>Name</Text>
                             <Text style={[styles.tableHeader, styles.flex1]}>Begin Date</Text>
-                            <Text style={[styles.tableHeader, styles.flex2]}>Modify</Text>
+                            <Text style={[styles.tableHeader, styles.flex1]}>Modify</Text>
                         </View>
                         {filteredDives.map((dive, index) => (
                             <View
@@ -113,6 +113,14 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 15,
+        shadowColor: '#000',
+        shadowOpacity: 0.2,
+        shadowOffset: {
+            width: 0,
+            height: -4,
+        },
+        shadowRadius: 4,
+        elevation: 4,
     },
     title: {
         fontSize: 20,

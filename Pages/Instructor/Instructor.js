@@ -74,9 +74,9 @@ function Instructor(props) {
                             style={[
                                 styles.menuButton,
                             ]}
-                            onPress={() => {navigation.navigate('Instructor')}}
+                            onPress={() => {navigation.navigate('Create a Dive')}}
                         >
-                            <Text style={styles.menuText}>Historiques des Plongées</Text>
+                            <Text style={styles.menuText}>Create a Dive</Text>
                         </Pressable>
                     </View>
                 </View>
@@ -89,13 +89,7 @@ function Instructor(props) {
                     type="Octicons"
                     onPress={() => {navigation.navigate('Home')}}
                 />
-                <Item
-                    size={22}
-                    name="person"
-                    text="Diver"
-                    type="Octicons"
-                    onPress={() => {navigation.navigate('Diver')}}
-                />
+
                 <Item
                     size={22}
                     name="key"
@@ -120,6 +114,14 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
+        shadowColor: '#000',
+        shadowOpacity: 0.2,
+        shadowOffset: {
+            width: 0,
+            height: -4,
+        },
+        shadowRadius: 4,
+        elevation: 4,
     },
     darkContainer: {
         backgroundColor: "#000",
@@ -161,7 +163,7 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 20,
         fontWeight: "bold",
-        marginTop: hp("5%"),
+        marginTop: hp("10%"),
         textAlign: "center",
     },
 });

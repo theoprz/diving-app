@@ -1,11 +1,10 @@
-import React, { useState, useEffect, useContext} from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { BottomMenu, Item } from "react-native-bottom-menu";
 import { View, Text, Image, StyleSheet, ScrollView, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import plongeeImage from '../../Component/ImgHome/plongee.png';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ThemeContext } from '../../Component/Theme/SwitchTheme';
-
 
 async function getToken(){
     return await AsyncStorage.getItem('token');
@@ -14,9 +13,10 @@ async function getToken(){
 async function setToken(token){
     await AsyncStorage.setItem('token', token);
 }
-function Home () {
+
+function Home() {
     const navigation = useNavigation();
-    const {isDarkModeEnabled} = useContext(ThemeContext);
+    const { isDarkModeEnabled } = useContext(ThemeContext);
 
     return (
         <View style={[styles.container, isDarkModeEnabled && styles.darkContainer]}>
@@ -49,28 +49,21 @@ function Home () {
                     name="home"
                     text="Home"
                     type="Octicons"
-                    onPress={() => {navigation.navigate('Home')}}
-                />
-                <Item
-                    size={22}
-                    name="person"
-                    text="Diver"
-                    type="Octicons"
-                    onPress={() => {navigation.navigate('Diver')}}
+                    onPress={() => { navigation.navigate('Home') }}
                 />
                 <Item
                     size={22}
                     name="key"
                     text="Dive Director"
                     type="Octicons"
-                    onPress={() => {navigation.navigate('Instructor')}}
+                    onPress={() => { navigation.navigate('Instructor') }}
                 />
                 <Item
                     size={22}
                     name="settings"
                     text="Settings"
                     type="gala"
-                    onPress={() => {navigation.navigate('Settings')}}
+                    onPress={() => { navigation.navigate('Settings') }}
                 />
             </BottomMenu>
         </View>
@@ -83,6 +76,14 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         padding: 8,
         backgroundColor: '#fff',
+        shadowColor: '#000',
+        shadowOpacity: 0.2,
+        shadowOffset: {
+            width: 0,
+            height: -4,
+        },
+        shadowRadius: 4,
+        elevation: 4,
     },
     darkContainer: {
         backgroundColor: '#121212',
@@ -97,12 +98,6 @@ const styles = StyleSheet.create({
     card: {
         backgroundColor: 'white',
         borderRadius: 8,
-        shadowColor: '#000',
-        shadowOpacity: 0.2,
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
         padding: 16,
         marginBottom: 60,
         marginTop: 16,
@@ -131,4 +126,5 @@ const styles = StyleSheet.create({
         textAlign: 'justify',
     },
 });
+
 export default Home;
