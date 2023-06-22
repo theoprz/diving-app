@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useContext } from 'react';
 import { BottomMenu, Item } from "react-native-bottom-menu";
 import { View, Text, Image, StyleSheet, ScrollView, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -56,7 +56,7 @@ function Home() {
                     name="key"
                     text="Dive Director"
                     type="Octicons"
-                    onPress={() => { navigation.navigate('Instructor') }}
+                    onPress={() => { navigation.navigate('Dive Director') }}
                 />
                 <Item
                     size={22}
@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
         elevation: 4,
     },
     darkContainer: {
-        backgroundColor: '#121212',
+        backgroundColor: '#333',
     },
     darkText: {
         color: '#fff',

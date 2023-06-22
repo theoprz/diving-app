@@ -32,34 +32,6 @@ function DiverList(props) {
     useEffect(() => {
         const fetchData = async () => {
             await getDatas(setDivers);
-            /*
-            const findToken = await AsyncStorage.getItem("token");
-            if (findToken !== null) {
-                try {
-                    const response = await fetch("http://93.104.215.68:5000/api/users/verify", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "x-access-token": findToken,
-                        },
-                        body: JSON.stringify({ token: findToken }),
-                    });
-                    if (!response.ok) {
-                        navigation.navigate("Login");
-                    } else {
-                        const data = await response.json(); // Parse response as JSON
-                        if (data.decoded.rank !== 2) {
-                            await navigation.replace("/Instructor");
-                            Alert.alert("You are not an instructor");
-                        }
-                    }
-                } catch (error) {
-                    console.log(error); // Handle any errors
-                }
-            } else {
-                navigation.navigate("Login");
-            }
-            */
         };
 
         fetchData();
@@ -78,7 +50,7 @@ function DiverList(props) {
     const containerListStyle = isDarkModeEnabled ? styles.containerListDark : styles.containerListLight;
 
     const handleItemClick = (item) => {
-        navigation.navigate("Profil", { item });
+        navigation.navigate("Diver Information", { item });
     };
 
 
@@ -90,7 +62,6 @@ function DiverList(props) {
 
     return (
         <View style={[containerStyle, styles.container]}>
-            <Text style={[titleStyle, styles.title]}>Divers</Text>
             <FlatList
                 style={[containerListStyle, styles.containerList]}
                 data={data}
@@ -105,8 +76,9 @@ function DiverList(props) {
 
 const styles = StyleSheet.create({
     container: {
+        backgroundColor: '#fff',
         flex: 1,
-        paddingTop: hp('9%'),
+        paddingTop: hp('4%'),
         justifyContent: "center",
     },
     containerLight: {
@@ -138,10 +110,10 @@ const styles = StyleSheet.create({
         backgroundColor: '#121212',
     },
     itemLight: {
-        backgroundColor: '#005a8d',
+        backgroundColor: '#20BDFF',
     },
     itemDark: {
-        backgroundColor: '#005a8d',
+        backgroundColor: '#20BDFF',
     },
     flatLight: {
         backgroundColor: '#fff',
@@ -159,11 +131,12 @@ const styles = StyleSheet.create({
         padding: 16,
         alignItems: "center",
         justifyContent: "center",
-        shadowColor: "#7dd3fc",
-        shadowOffset: { width: 1, height: 2 },
-        shadowOpacity: 1,
+        shadowColor: "#5433FF",
+        shadowOffset: { width: 1, height: 3 },
+        shadowOpacity: 0.5,
         shadowRadius: 4,
-        elevation: 2,
+        elevation: 5,
+        marginHorizontal: "5%",
     },
     itemText: {
         fontSize: 16,

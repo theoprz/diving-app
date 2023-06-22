@@ -15,18 +15,18 @@ function DownloadButton(props) {
         <View>
             <TouchableOpacity
                 style={{
-                    flex: 1,
-                    backgroundColor: "#007AFF",
+                    backgroundColor: "#5433FF",
                     borderRadius: 20,
                     paddingHorizontal: 20,
                     paddingVertical: 10,
-                    marginRight: 10,
                     alignItems: "center",
+                    marginHorizontal: "5%",
+                    marginBottom: "10%",
                 }}
                 onPress={loadPdf}
             >
                 <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 16 }}>
-                    Load PDF
+                    View PDF
                 </Text>
             </TouchableOpacity>
         </View>

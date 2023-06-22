@@ -8,14 +8,29 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ThemeContext } from '../../Component/Theme/SwitchTheme';
 
-function Settings(props) {
+async function getToken(){
+    return await AsyncStorage.getItem('token');
+}
+
+async function setToken(token){
+    await AsyncStorage.setItem('token', token);
+}
+
+function Settings() {
     const navigation = useNavigation();
     const [personalInformation, setPersonalInformation] = useState({});
     const [modifyInfo, setModifyInfo] = useState(false);
     const [valuesModified, setValuesModified] = useState({});
     const [showCancelButton, setShowCancelButton] = useState(false);
-    const [birthDate, setBirthDate] = useState(personalInformation.birth_date ? personalInformation.birth_date.slice(0, 10) : '');
     const { isDarkModeEnabled, toggleDarkMode } = useContext(ThemeContext);
+    const [userId, setUserId] = useState();
+    async function getData () {
+        await axios.post("http://93.104.215.68:5000/api/users/verify", {token: await getToken()}).then(async (response) => {
+            if (response.data.success) {
+                setUserId(response.data.decoded.id);
+            }
+        })
+    }
 
     const handleToggleDarkMode = () => {
         toggleDarkMode(!isDarkModeEnabled);
@@ -25,26 +40,27 @@ function Settings(props) {
         AsyncStorage.removeItem('token');
         navigation.navigate('Login');
     };
-
     useEffect(() => {
-        if (props.userId) {
+        getData()
+        if (userId) {
             axios
-                .get('/api/users/personal/' + props.userId)
+                .get('http://93.104.215.68:5000/api/users/personal/' + userId)
                 .then((response) => {
                     setPersonalInformation(response.data[0]);
+
                 })
                 .catch((error) => {
                     console.log(error);
                 });
         }
-    }, [props.userId]);
+
+    }, [userId]);
 
     const handleSubmit = () => {
-        const updatedValues = { ...valuesModified, birth_date: birthDate };
+        const updatedValues = { ...valuesModified};
         axios
-            .put('/api/users/personal/' + props.userId, updatedValues)
+            .put('http://93.104.215.68:5000/api/users/personal/' + userId, updatedValues)
             .then((response) => {
-                console.log(response);
             })
             .catch((error) => {
                 console.log(error);
@@ -60,18 +76,28 @@ function Settings(props) {
         setValuesModified({});
         setShowCancelButton(false);
     };
+    function formatDate(date) {
+        if (date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        } else {
+            return "";
+        }
+    }
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, isDarkModeEnabled && styles.darkContainer]}>
             <ScrollView contentContainerStyle={styles.scrollContainer}>
                 <View style={styles.formContainer}>
                     <View style={styles.sectionContainer}>
-                        <Text style={styles.sectionTitle}>Personal Information</Text>
+                        <Text style={[styles.sectionTitle, isDarkModeEnabled && styles.darkText]}>Personal Information</Text>
                         <View style={styles.row}>
                             <View style={styles.inputContainer}>
-                                <Text style={styles.label}>First Name</Text>
+                            <Text style={[styles.label, isDarkModeEnabled && styles.darkText]}>First Name</Text>
                                 <TextInput
-                                    style={styles.input}
+                                    style={[styles.input, isDarkModeEnabled && styles.darkInput]}
                                     defaultValue={personalInformation.first_name}
                                     editable={modifyInfo}
                                     onChangeText={(text) =>
@@ -83,9 +109,9 @@ function Settings(props) {
                                 />
                             </View>
                             <View style={styles.inputContainer}>
-                                <Text style={styles.label}>Last Name</Text>
+                                <Text style={[styles.label, isDarkModeEnabled && styles.darkText]}>Last Name</Text>
                                 <TextInput
-                                    style={styles.input}
+                                    style={[styles.input, isDarkModeEnabled && styles.darkInput]}
                                     defaultValue={personalInformation.last_name}
                                     editable={modifyInfo}
                                     onChangeText={(text) =>
@@ -96,52 +122,36 @@ function Settings(props) {
                                     }
                                 />
                             </View>
+                        </View>
+                        <View style={styles.row}>
                             <View style={styles.inputContainer}>
-                                <Text style={styles.label}>Email</Text>
-                                <TextInput
-                                    style={styles.input}
-                                    defaultValue={personalInformation.email}
-                                    editable={modifyInfo}
-                                    onChangeText={(text) =>
-                                        setValuesModified({
-                                            ...valuesModified,
-                                            email: text,
-                                        })
-                                    }
-                                />
-                            </View>
-                            <View style={styles.inputContainer}>
-                                <Text style={styles.label}>Birth Date:</Text>
+                                <Text style={[styles.label, isDarkModeEnabled && styles.darkText]}>Birth Date:</Text>
                                 {modifyInfo ? (
                                     <DateTimePicker
-                                        value={birthDate ? new Date(birthDate) : new Date()}
+                                        value={personalInformation.birth_date ? new Date(personalInformation.birth_date) : new Date()}
                                         mode="date"
                                         display="default"
                                         onChange={(event, selectedDate) => {
-                                            if (selectedDate) {
-                                                setBirthDate(selectedDate.toISOString().slice(0, 10)); // Mettre à jour avec la valeur formatée
+                                            if (selectedDate && event.nativeEvent.target) {
+                                                setValuesModified({ birth_date: formatDate(selectedDate) }); // Mettre à jour la valeur modifiée
                                             }
                                         }}
+
                                     />
                                 ) : (
                                     <TextInput
-                                        style={styles.input}
-                                        value={birthDate} // Use the 'value' prop instead of 'defaultValue'
-                                        editable={modifyInfo}
-                                        onChangeText={(text) =>
-                                            setValuesModified({
-                                                ...valuesModified,
-                                                birth_date: text,
-                                            })
-                                        }
+                                        style={[styles.input, isDarkModeEnabled && styles.darkInput]}
+                                        value={personalInformation.birth_date ? formatDate(new Date(personalInformation.birth_date)) : formatDate(new Date())}
+                                        editable={false}
                                     />
                                 )}
                             </View>
                             <View style={styles.inputContainer}>
-                                <Text style={styles.label}>Password</Text>
+                                <Text style={[styles.label, isDarkModeEnabled && styles.darkText]}>Password</Text>
                                 <TextInput
-                                    style={styles.input}
+                                    style={[styles.input, isDarkModeEnabled && styles.darkInput]}
                                     placeholder="********"
+                                    value={personalInformation.password}
                                     secureTextEntry
                                     editable={modifyInfo}
                                     onChangeText={(text) =>
@@ -153,19 +163,35 @@ function Settings(props) {
                                 />
                             </View>
                         </View>
+                        <View style={styles.row}>
+                            <View style={styles.inputMailContainer}>
+                                <Text style={[styles.label, isDarkModeEnabled && styles.darkText]}>Email</Text>
+                                <TextInput
+                                    style={[styles.input, isDarkModeEnabled && styles.darkInput]}
+                                    defaultValue={personalInformation.email}
+                                    editable={modifyInfo}
+                                    onChangeText={(text) =>
+                                        setValuesModified({
+                                            ...valuesModified,
+                                            email: text,
+                                        })
+                                    }
+                                />
+                            </View>
+                        </View>
                         <View style={styles.buttonContainer}>
                             {modifyInfo ? (
                                 <View style={styles.buttonRow}>
-                                    <Pressable style={styles.cancelButton} onPress={handleCancel}>
-                                        <Text style={styles.buttonText}>Cancel</Text>
+                                    <Pressable style={[styles.cancelButton, isDarkModeEnabled && styles.darkButton]} onPress={handleCancel}>
+                                        <Text style={[styles.buttonText, isDarkModeEnabled && styles.darkText]}>Cancel</Text>
                                     </Pressable>
-                                    <Pressable style={styles.button} onPress={handleSubmit}>
-                                        <Text style={styles.buttonText}>Submit</Text>
+                                    <Pressable style={[styles.submitButton, isDarkModeEnabled && styles.darkSubmitButton]} onPress={handleSubmit}>
+                                        <Text style={[styles.buttonText, isDarkModeEnabled && styles.darkText]}>Submit</Text>
                                     </Pressable>
                                 </View>
                             ) : (
                                 <Pressable
-                                    style={[styles.button, showCancelButton && styles.modifyButtonActive]}
+                                    style={[styles.button, showCancelButton && styles.modifyButtonActive, isDarkModeEnabled && styles.darkButton]}
                                     onPress={() => {
                                         setModifyInfo(true);
                                         setShowCancelButton(true);
@@ -177,26 +203,26 @@ function Settings(props) {
                                         setShowCancelButton(false);
                                     }}
                                 >
-                                    <Text style={styles.buttonText}>Modify</Text>
+                                    <Text style={[styles.buttonText, isDarkModeEnabled && styles.darkText]}>Modify</Text>
                                 </Pressable>
                             )}
                         </View>
                     </View>
-                    <Text style={styles.title}>Settings</Text>
+                    <Text style={[styles.title, isDarkModeEnabled && styles.darkText]}>Settings</Text>
                     <View style={styles.settingContainer}>
-                        <View style={styles.darkContainer}>
+                        <View style={styles.darkModeContainer}>
                             <View style={styles.darkTextContainer}>
-                                <Text style={styles.settingText}>Dark Mode</Text>
+                                <Text style={[styles.settingText, isDarkModeEnabled && styles.darkText]}>Dark Mode</Text>
                             </View>
                             <Switch
                                 value={isDarkModeEnabled}
                                 onValueChange={handleToggleDarkMode}
-                                trackColor={{ false: '#111', true: '#7dd3fc' }}
-                                thumbColor={isDarkModeEnabled ? '#333333' : '#666666'}
+                                trackColor={{ false: '#A5FECB', true: '#000' }}
+                                thumbColor={isDarkModeEnabled ? '#20BDFF' : '#20BDFF'}
                             />
                         </View>
-                        <Pressable style={styles.logoutButton} onPress={handleLogout}>
-                            <Text style={styles.logoutButtonText}>Logout</Text>
+                        <Pressable style={[styles.logoutButton, isDarkModeEnabled && styles.darkButton]} onPress={handleLogout}>
+                            <Text style={[styles.logoutButtonText, isDarkModeEnabled && styles.darkText]}>Logout</Text>
                         </Pressable>
                     </View>
                 </View>
@@ -214,7 +240,7 @@ function Settings(props) {
                     name="key"
                     text="Dive Director"
                     type="Octicons"
-                    onPress={() => {navigation.navigate('Instructor')}}
+                    onPress={() => {navigation.navigate('Dive Director')}}
                 />
                 <Item
                     size={22}
@@ -232,7 +258,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         height: hp('100%'),
-        backgroundColor: '#8F908D',
+        backgroundColor: '#fff',
         shadowColor: '#000',
         shadowOpacity: 0.2,
         shadowOffset: {
@@ -242,6 +268,20 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
         elevation: 4,
     },
+    darkContainer: {
+        backgroundColor: '#333',
+    },
+    darkText : {
+        color: '#fff',
+    },
+    darkInput: {
+        backgroundColor: '#20BDFF',
+        borderColor: '#5433FF',
+        shadowRadius: 5,
+        shadowOpacity: 0.5,
+        shadowColor: '#5433FF',
+    },
+
     scrollContainer: {
         flexGrow: 1,
         paddingBottom: hp('5%'),
@@ -257,7 +297,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         textAlign: 'center',
         marginVertical: hp('4%'),
-        marginTop: hp('10%'),
+        marginTop: hp('3%'),
     },
     sectionContainer: {
         marginBottom: hp('2%'),
@@ -267,7 +307,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         marginBottom: hp('2%'),
-        marginTop: hp('10%'),
+        marginTop: hp('5%'),
     },
     row: {
         flexDirection: 'row',
@@ -283,16 +323,23 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
         marginBottom: hp('1%'),
+        textAlign: 'center',
     },
     input: {
+        textAlign: 'center',
         borderWidth: 1,
         borderColor: '#000',
-        borderRadius: 5,
+        borderRadius: 20,
         shadowRadius: 5,
         shadowOpacity: 0.5,
         shadowOffset: { width: 1, height: 2 },
         backgroundColor: '#fff',
         padding: 10,
+    },
+    inputMailContainer: {
+        flex:1,
+        width: '90%',
+        justifyContent: 'center',
     },
     buttonContainer: {
         marginTop: hp('2%'),
@@ -305,21 +352,31 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
     },
     button: {
-        backgroundColor: '#33abff',
-        paddingVertical: hp('1%'),
-        paddingHorizontal: wp('3%'),
-        borderRadius: 5,
-        marginHorizontal: wp('1%'),
+        backgroundColor: '#20BDFF',
+        paddingVertical: hp('2%'),
+        paddingHorizontal: wp('5%'),
+        borderRadius: 15,
+        marginHorizontal: wp('2%'),
+    },
+    submitButton: {
+        backgroundColor: '#A5FECB',
+        paddingVertical: hp('2%'),
+        paddingHorizontal: wp('5%'),
+        borderRadius: 15,
+        marginHorizontal: wp('2%'),
+    },
+    darkSubmitButton: {
+      backgroundColor: '#20BDFF',
     },
     modifyButtonActive: {
-        backgroundColor: '#7dd3fc',
+        backgroundColor: '#5433FF',
     },
     cancelButton: {
-        backgroundColor: '#0078cc',
-        paddingVertical: hp('1%'),
-        paddingHorizontal: wp('3%'),
-        borderRadius: 5,
-        marginHorizontal: wp('1%'),
+        backgroundColor: '#20BDFF',
+        paddingVertical: hp('2%'),
+        paddingHorizontal: wp('5%'),
+        borderRadius: 15,
+        marginHorizontal: wp('2%'),
     },
     buttonText: {
         color: '#fff',
@@ -332,7 +389,7 @@ const styles = StyleSheet.create({
         marginTop: hp('5%'),
         marginBottom: hp('10%'),
     },
-    darkContainer: {
+    darkModeContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         marginRight: wp('5%'),
@@ -346,10 +403,13 @@ const styles = StyleSheet.create({
     },
     logoutButton: {
         marginLeft: wp('5%'),
-        backgroundColor: '#f44336',
-        paddingVertical: hp('1%'),
-        paddingHorizontal: wp('3%'),
-        borderRadius: 5,
+        backgroundColor: '#000',
+        paddingVertical: hp('2%'),
+        paddingHorizontal: wp('5%'),
+        borderRadius: 20,
+    },
+    darkButton: {
+        backgroundColor: '#20BDFF',
     },
     logoutButtonText: {
         color: '#fff',

@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useContext} from "react";
+import React, {useContext} from "react";
 import {View, Text, TouchableOpacity, Alert, StyleSheet, FlatList, Switch, Pressable} from "react-native";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
@@ -24,35 +24,35 @@ async function setToken(token){
     await AsyncStorage.setItem('token', token);
 }
 
-function Instructor(props) {
+function DiveDirector(props) {
     const {isDarkModeEnabled} = useContext(ThemeContext);
     const navigation = useNavigation();
 
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Admin</Text>
+        <View style={[styles.container, isDarkModeEnabled && styles.darkContainer]}>
+            <Text style={[styles.title, isDarkModeEnabled && styles.darkText]}>Admin</Text>
             <View style={styles.content}>
                 <View style={styles.row}>
                     <View style={styles.menuItem}>
                         <Pressable
                             style={[
-                                styles.menuButton,
+                                styles.menuButton, isDarkModeEnabled && styles.darkButton
                             ]}
                             onPress={() => {navigation.navigate('Diver List')}}
                         >
-                            <Text style={styles.menuText}>View The Diver List</Text>
+                            <Text style={[styles.menuText, isDarkModeEnabled && styles.darkText]}>View The Diver List</Text>
                         </Pressable>
                     </View>
 
                     <View style={styles.menuItem}>
                         <Pressable
                             style={[
-                                styles.menuButton,
+                                styles.menuButton, isDarkModeEnabled && styles.darkButton
                             ]}
                             onPress={() => {navigation.navigate('Dive Management')}}
                         >
-                            <Text style={styles.menuText}>Dive Management</Text>
+                            <Text style={[styles.menuText, isDarkModeEnabled && styles.darkText]}>Dive Management</Text>
                         </Pressable>
                     </View>
                 </View>
@@ -61,22 +61,22 @@ function Instructor(props) {
                     <View style={styles.menuItem}>
                         <Pressable
                             style={[
-                                styles.menuButton,
+                                styles.menuButton, isDarkModeEnabled && styles.darkButton
                             ]}
                             onPress={() => {navigation.navigate('Dives History')}}
                         >
-                            <Text style={styles.menuText}>Dives History</Text>
+                            <Text style={[styles.menuText, isDarkModeEnabled && styles.darkText]}>Dives History</Text>
                         </Pressable>
                     </View>
 
                     <View style={styles.menuItem}>
                         <Pressable
                             style={[
-                                styles.menuButton,
+                                styles.menuButton, isDarkModeEnabled && styles.darkButton
                             ]}
                             onPress={() => {navigation.navigate('Create a Dive')}}
                         >
-                            <Text style={styles.menuText}>Create a Dive</Text>
+                            <Text style={[styles.menuText, isDarkModeEnabled && styles.darkText]}>Create a Dive</Text>
                         </Pressable>
                     </View>
                 </View>
@@ -95,7 +95,7 @@ function Instructor(props) {
                     name="key"
                     text="Dive Director"
                     type="Octicons"
-                    onPress={() => {navigation.navigate('Instructor')}}
+                    onPress={() => {navigation.navigate('Dive Director')}}
                 />
                 <Item
                     size={22}
@@ -114,6 +114,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
+        backgroundColor:"#fff",
         shadowColor: '#000',
         shadowOpacity: 0.2,
         shadowOffset: {
@@ -124,7 +125,13 @@ const styles = StyleSheet.create({
         elevation: 4,
     },
     darkContainer: {
-        backgroundColor: "#000",
+        backgroundColor: "#333",
+    },
+    darkButton: {
+        backgroundColor: "#20BDFF",
+        shadowColor: "#5433FF",
+        shadowOpacity: 1,
+
     },
     content: {
         flex: 1,
@@ -147,9 +154,9 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
+        shadowOffset: { width: 1, height: 3 },
+        shadowOpacity: 0.5,
+        shadowRadius: 5,
         elevation: 5,
         height: 100,
     },
@@ -163,9 +170,12 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 20,
         fontWeight: "bold",
-        marginTop: hp("10%"),
+        marginTop: hp("3%"),
         textAlign: "center",
+    },
+    darkText: {
+      color: "white",
     },
 });
 
-export default Instructor;
+export default DiveDirector;
