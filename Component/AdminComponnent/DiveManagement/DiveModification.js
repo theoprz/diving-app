@@ -29,7 +29,7 @@ function DiveModification({ route, navigation }) {
     const [diveSitesList, setDiveSitesList] = useState([]); // State for dive sites list
     const [adminList, setAdminList] = useState([]); // State for admin list
     const {isDarkModeEnabled} = useContext(ThemeContext); // DarkMode
-
+console.log(dives);
     function formatDate(date) {
         if (date instanceof Date) {
             const year = date.getFullYear();
@@ -231,12 +231,18 @@ function DiveModification({ route, navigation }) {
                         editable={false}
                     />
                     <Text style={[styles.label, isDarkModeEnabled && styles.darkLabel]}>Diver Price:</Text>
-                    <TextInput style={[styles.input, isDarkModeEnabled && styles.darkInput]} value={diverPrice.toString()} onChangeText={setDiverPrice} editable={isEditing} keyboardType="numeric"/>
+                    <TextInput
+                        style={[styles.input, isDarkModeEnabled && styles.darkInput]}
+                        value={diverPrice ? diverPrice.toString().replace('.', ',') : ""}
+                        onChangeText={(text) => setDiverPrice(text.replace(',', '.'))}
+                        editable={isEditing}
+                        keyboardType="numeric"
+                    />
                     <Text style={[styles.label, isDarkModeEnabled && styles.darkLabel]}>Instructor Price:</Text>
                     <TextInput
                         style={[styles.input, isDarkModeEnabled && styles.darkInput]}
-                        value={instructorPrice.toString()}
-                        onChangeText={setInstructorPrice}
+                        value={instructorPrice ? instructorPrice.toString().replace('.', ',') : ""}
+                        onChangeText={(text) => setInstructorPrice(text.replace(',', '.'))}
                         editable={isEditing}
                         keyboardType="numeric"
                     />
@@ -274,10 +280,6 @@ function DiveModification({ route, navigation }) {
                                 <Text style={styles.editButtonText}>Edit</Text>
                             </TouchableOpacity>
                         </View>
-
-
-
-
                     ) : (
                     <View style={styles.buttonsContainer}>
                         <TouchableOpacity style={styles.saveButton} onPress={handleSave}>

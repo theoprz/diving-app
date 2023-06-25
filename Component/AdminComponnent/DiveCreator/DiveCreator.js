@@ -61,11 +61,6 @@ function DiveCreator() {
             Alert.alert("Error", "Max PPO2 must be between 0.16 and 1.6.");
             return false;
         }
-        const selectedDirector = adminList.find((director) => director.id === director);
-        if (!selectedDirector) {
-            Alert.alert("Error", "Invalid Dive Director.");
-            return;
-        }
         return true;
     };
 
@@ -183,8 +178,8 @@ function DiveCreator() {
                     <View style={styles.inputContainer}>
                         <TextInput
                             style={[styles.input, isDarkModeEnabled && styles.darkText]}
-                            value={diverPrice ? diverPrice.toString() : ""}
-                            onChangeText={(text) => setDiverPrice(parseFloat(text))}
+                            value={diverPrice ? diverPrice.toString().replace('.', ',') : ""}
+                            onChangeText={(text) => setDiverPrice(text.replace(',', '.'))}
                             keyboardType="numeric"
                             shadowColor="#000"
                             shadowOpacity={0.2}
@@ -199,8 +194,8 @@ function DiveCreator() {
                     <View style={styles.inputContainer}>
                         <TextInput
                             style={[styles.input, isDarkModeEnabled && styles.darkText]}
-                            value={instructorPrice ? instructorPrice.toString() : ""}
-                            onChangeText={(text) => setInstructorPrice(parseFloat(text))}
+                            value={instructorPrice ? instructorPrice.toString().replace('.', ',') : ""}
+                            onChangeText={(text) => setInstructorPrice(text.replace(',', '.'))}
                             keyboardType="numeric"
                             shadowColor="#000"
                             shadowOpacity={0.2}

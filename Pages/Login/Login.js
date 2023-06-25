@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         elevation: 3,
-        backgroundColor: '#039',
+        backgroundColor: '#20BDFF',
     },
     login: {
         fontSize: 16,
