@@ -76,7 +76,6 @@ function DiverList(props) {
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#fff',
         flex: 1,
         paddingTop: hp('4%'),
         justifyContent: "center",
@@ -85,7 +84,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
     },
     containerDark: {
-        backgroundColor: '#121212',
+        backgroundColor: '#333',
     },
     title: {
         fontSize: 24,
@@ -107,7 +106,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
     },
     containerListDark: {
-        backgroundColor: '#121212',
+        backgroundColor: '#333',
     },
     itemLight: {
         backgroundColor: '#20BDFF',
@@ -119,7 +118,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
     },
     flatDark: {
-        backgroundColor: '#121212',
+        backgroundColor: '#333',
     },
     listContent: {
         justifyContent: "center",
